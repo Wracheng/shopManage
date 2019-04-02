@@ -23,6 +23,10 @@ import VueRouter from 'vue-router'
 // 引入组件
 import Login from '../components/login/Login.vue'
 import Home from '../components/home/Home.vue'
+import Users from '../components/users/Users.vue'
+import Roles from '../components/roles/Roles.vue'
+import Rights from '../components/rights/Rights.vue'
+
 // 安装一下
 Vue.use(VueRouter)
 
@@ -31,8 +35,30 @@ const router = new VueRouter({
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
-    { path: '/home', component: Home }
+    {
+      path: '/home',
+      component: Home,
+      children: [
+        { path: '/users', component: Users },
+        { path: '/roles', component: Roles },
+        { path: '/rights', component: Rights }
+      ]
+    }
   ]
+})
+
+// 导航 守卫
+router.beforeEach((to, from, next) => {
+  // 判断访问的是不是登录页面
+  if (to.path === '/login') {
+    next()
+  } else {
+    // 其他页面
+    // 判断有没有登录过
+    let token = localStorage.getItem('token')
+    // 判断token有没有值
+    token ? next() : next('/login')
+  }
 })
 
 // 导出 路由

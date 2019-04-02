@@ -79,6 +79,11 @@ export default {
           .then(res => {
             console.log(res);
             if (res.data.meta.status === 200) {
+              //0. 保存token到本地
+              // console.log(res.data.data.token);
+localStorage.setItem('token',res.data.data.token)
+
+
               //1. 登录成功提示
               this.$message({
                 message: res.data.meta.msg,
