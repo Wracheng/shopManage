@@ -67,39 +67,66 @@ export default {
     startLogin() {
       // 在 事件中对表单再次校验 (格式)
 
-      this.$refs.ruleForm.validate(valid => {
+      this.$refs.ruleForm.validate(async valid => {
         // 如果校验不成功 中止
         if (!valid) {
           return;
         }
         // 校验成功
         // console.log("开始登录");
-        axios
-          .post("http://localhost:8888/api/private/v1/login", this.ruleForm)
-          .then(res => {
-            console.log(res);
-            if (res.data.meta.status === 200) {
-              //0. 保存token到本地
-              // console.log(res.data.data.token);
-localStorage.setItem('token',res.data.data.token)
 
+        let res = await axios.post(
+          "http://localhost:8888/api/private/v1/login",
+          this.ruleForm
+        );
+        console.log(res);
 
-              //1. 登录成功提示
-              this.$message({
-                message: res.data.meta.msg,
-                type: "success",
-                duration: 800
-              });
-              //2. 跳转到home页面 (编程式导航)
-              this.$router.push("/home");
-            } else {
-              this.$message({
-                message: res.data.meta.msg,
-                type: "error",
-                duration: 800
-              });
-            }
+        if (res.data.meta.status === 200) {
+          //0. 保存token到本地
+          // console.log(res.data.data.token);
+          localStorage.setItem("token", res.data.data.token);
+
+          //1. 登录成功提示
+          this.$message({
+            message: res.data.meta.msg,
+            type: "success",
+            duration: 800
           });
+          //2. 跳转到home页面 (编程式导航)
+          this.$router.push("/home");
+        } else {
+          this.$message({
+            message: res.data.meta.msg,
+            type: "error",
+            duration: 800
+          });
+        }
+
+        // axios
+        //   .post("http://localhost:8888/api/private/v1/login", this.ruleForm)
+        //   .then(res => {
+        //     console.log(res);
+        //     if (res.data.meta.status === 200) {
+        //       //0. 保存token到本地
+        //       // console.log(res.data.data.token);
+        //       localStorage.setItem("token", res.data.data.token);
+
+        //       //1. 登录成功提示
+        //       this.$message({
+        //         message: res.data.meta.msg,
+        //         type: "success",
+        //         duration: 800
+        //       });
+        //       //2. 跳转到home页面 (编程式导航)
+        //       this.$router.push("/home");
+        //     } else {
+        //       this.$message({
+        //         message: res.data.meta.msg,
+        //         type: "error",
+        //         duration: 800
+        //       });
+        //     }
+        //   });
       });
     },
     // 重置
@@ -125,7 +152,7 @@ localStorage.setItem('token',res.data.data.token)
 }
 
 h1 {
-color : red
+  color: red;
 }
 </style>
 

@@ -79,7 +79,45 @@ export default {
     /**
      * 退出登录
      */
-    logout() {
+    async logout() {
+      try {
+        await this.$confirm("此操作将退出登录, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        });
+        // 点击确定了,才会执行 后面的代码
+        console.log("点击确定了");
+        // 1. 删除token
+        localStorage.removeItem("token");
+        // 2. 跳转到login
+        this.$router.push("/login");
+        // 3. 提示退出成功
+        this.$message({
+          message: "退出成功",
+          type: "success",
+          duration: 800
+        });
+      } catch (error) {
+        console.log("点击取消了");
+         this.$message({
+            type: "info",
+            message: "已取消退出",
+            duration: 800
+          });
+      }
+
+      // 点击确定按钮
+      // .then(() => {
+      //    console.log('点击确定了');
+
+      // })
+      // // 点击取消
+      // .catch(() => {
+      //  console.log('点击取消了');
+      // });
+    },
+    logout1() {
       this.$confirm("此操作将退出登录, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

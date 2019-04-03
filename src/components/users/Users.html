@@ -1,0 +1,65 @@
+ <!--
+  el-table 表格组件
+   :data="tableData"  表格数据 (数组)
+
+  el-table-column 列
+
+  组件里只包含了表格组件和列, 行的个数由数据决定
+
+  -->
+  <div>
+    <!-- 面包屑 -->
+    <el-breadcrumb class="bread" separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <!-- 查询组件 -->
+    <!-- slot="append" append后面  prepend前面 -->
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-input placeholder="请输入内容" v-model="searchText">
+          <el-button @click="startQuery" slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+      </el-col>
+      <el-col :span="3">
+        <el-button>默认按钮</el-button>
+      </el-col>
+    </el-row>
+
+    <!-- 表格 -->
+    <el-table :data="usersList" style="width: 100%">
+      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+      <el-table-column prop="mobile" label="电话"></el-table-column>
+      <el-table-column label="用户状态"></el-table-column>
+      <el-table-column label="操作">
+        <!-- 自定义列 -->
+        <template slot-scope="scope">
+          <!--
+            plain 镂空
+            size : mini
+            type="primary" /success / danger
+
+          -->
+          <el-button plain size="mini" type="primary" icon="el-icon-edit"></el-button>
+          <el-button plain size="mini" type="danger" icon="el-icon-delete"></el-button>
+          <el-button plain size="mini" type="success" icon="el-icon-check">分配角色</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页
+    total : 总个数
+    page-size : 一页显示几个
+    current-page : 当前页
+    -->
+    <el-pagination
+      @current-change="changePage"
+      background
+      layout="prev, pager, next"
+      :current-page="pagenum"
+      :page-size="2"
+      :total="total"
+    ></el-pagination>
+  </div>
