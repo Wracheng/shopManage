@@ -1,4 +1,4 @@
- <!--
+<!--
   el-table 表格组件
    :data="tableData"  表格数据 (数组)
 
@@ -7,59 +7,140 @@
   组件里只包含了表格组件和列, 行的个数由数据决定
 
   -->
-  <div>
-    <!-- 面包屑 -->
-    <el-breadcrumb class="bread" separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+<div>
+  <!-- 面包屑 -->
+  <el-breadcrumb class="bread" separator-class="el-icon-arrow-right">
+    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+    <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+    <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+  </el-breadcrumb>
 
-    <!-- 查询组件 -->
-    <!-- slot="append" append后面  prepend前面 -->
-    <el-row :gutter="20">
-      <el-col :span="8">
-        <el-input placeholder="请输入内容" v-model="searchText">
-          <el-button @click="startQuery" slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </el-col>
-      <el-col :span="3">
-        <el-button>默认按钮</el-button>
-      </el-col>
-    </el-row>
+  <!-- 查询组件 -->
+  <!-- slot="append" append后面  prepend前面 -->
+  <el-row :gutter="20">
+    <el-col :span="8">
+      <el-input placeholder="请输入内容" v-model="searchText">
+        <el-button
+          @click="startQuery"
+          slot="append"
+          icon="el-icon-search"
+        ></el-button>
+      </el-input>
+    </el-col>
+    <el-col :span="3">
+      <el-button @click="showAddUserDialog">添加用户</el-button>
+    </el-col>
+  </el-row>
 
-    <!-- 表格 -->
-    <el-table :data="usersList" style="width: 100%">
-      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
-      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="mobile" label="电话"></el-table-column>
-      <el-table-column label="用户状态"></el-table-column>
-      <el-table-column label="操作">
-        <!-- 自定义列 -->
-        <template slot-scope="scope">
-          <!--
+  <!-- 表格 -->
+  <el-table :data="usersList" style="width: 100%">
+    <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+    <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+    <el-table-column prop="mobile" label="电话"></el-table-column>
+    <el-table-column label="用户状态">
+      <template slot-scope="scope">
+        <el-switch
+          v-model="scope.row.mg_state"
+          @change="changeState(scope.row)"
+        >
+        </el-switch>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作">
+      <!-- 自定义列 -->
+      <template slot-scope="scope">
+        <!--
             plain 镂空
             size : mini
             type="primary" /success / danger
 
           -->
-          <el-button plain size="mini" type="primary" icon="el-icon-edit"></el-button>
-          <el-button plain size="mini" type="danger" icon="el-icon-delete"></el-button>
-          <el-button plain size="mini" type="success" icon="el-icon-check">分配角色</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页
+        <el-button
+          plain
+          size="mini"
+          type="primary"
+          icon="el-icon-edit"
+          @click="showEditUserDialog(scope.row)"
+        ></el-button>
+        <el-button
+          plain
+          size="mini"
+          type="danger"
+          icon="el-icon-delete"
+          @click="delUser(scope.row.id)"
+        ></el-button>
+        <el-button plain size="mini" type="success" icon="el-icon-check"
+          >分配角色</el-button
+        >
+      </template>
+    </el-table-column>
+  </el-table>
+  <!-- 分页
     total : 总个数
     page-size : 一页显示几个
     current-page : 当前页
     -->
-    <el-pagination
-      @current-change="changePage"
-      background
-      layout="prev, pager, next"
-      :current-page="pagenum"
-      :page-size="2"
-      :total="total"
-    ></el-pagination>
-  </div>
+  <el-pagination
+    @current-change="changePage"
+    background
+    layout="prev, pager, next"
+    :current-page="pagenum"
+    :page-size="2"
+    :total="total"
+  ></el-pagination>
+
+  <!-- 第一个对话框  : 添加用户 -->
+  <!--
+    el-dialog : 对话框
+     - title : 对话框的标题
+
+   -->
+  <el-dialog
+    title="添加用户"
+    :visible.sync="dialogAddUserVisible"
+    @close="addUserDialogClose"
+  >
+    <el-form
+      :model="addUserForm"
+      label-width="100px"
+      :rules="rules"
+      ref="addUserRef"
+    >
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="addUserForm.username" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="addUserForm.password" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="addUserForm.email" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="手机" prop="mobile">
+        <el-input v-model="addUserForm.mobile" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogAddUserVisible = false">取 消</el-button>
+      <el-button type="primary" @click="addUser">确 定</el-button>
+    </div>
+  </el-dialog>
+
+  <!-- 第二个对话框 : 编辑用户 -->
+  <el-dialog title="编辑用户" :visible.sync="dialogEditUserVisible">
+    <el-form :model="editUserForm" label-width="100px">
+      <el-form-item label="用户名" prop="username">
+        <el-tag type="info">{{ editUserForm.username }}</el-tag>
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="editUserForm.email" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="手机">
+        <el-input v-model="editUserForm.mobile" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogEditUserVisible = false">取 消</el-button>
+      <el-button type="primary" @click="editUser">确 定</el-button>
+    </div>
+  </el-dialog>
+</div>
