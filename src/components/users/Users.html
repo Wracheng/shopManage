@@ -93,7 +93,6 @@
   <!--
     el-dialog : 对话框
      - title : 对话框的标题
-
    -->
   <el-dialog
     title="添加用户"
@@ -143,4 +142,26 @@
       <el-button type="primary" @click="editUser">确 定</el-button>
     </div>
   </el-dialog>
+
+  <!-- 第三个对话框 : 分配 角色 -->
+  <el-dialog title="分配角色" :visible.sync="dialogAssignRoleVisible">
+    <el-form :model="assignRoleForm"  label-width="80px">
+      <el-form-item label="用户名">
+        <el-tag>{{assignRoleForm.username  }}</el-tag>
+      </el-form-item>
+      <el-form-item label="角色列表" >
+        <el-select v-model="assignRoleForm.rid" placeholder="请选择角色">
+          <!-- label : 展示  value:才是与rid绑定的值 -->
+          <el-option v-for='item in rolesList' :key='item.id' :label="item.roleName" :value="item.id"></el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogAssignRoleVisible = false">取 消</el-button>
+      <el-button type="primary" @click="dialogAssignRoleVisible = false"
+        >确 定</el-button
+      >
+    </div>
+  </el-dialog>
+
 </div>

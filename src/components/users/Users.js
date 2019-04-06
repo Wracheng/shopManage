@@ -66,11 +66,22 @@ export default {
         email: '',
         mobile: '',
         id: 0
-      }
+      },
+      // 分配角色 : 是否显示分配角色对话框
+      dialogAssignRoleVisible: false,
+      // 分配角色表单对象
+      assignRoleForm: {
+        username: '测试',
+        // 角色id
+        rid: ''
+      },
+      // 角色列表
+      rolesList: []
     }
   },
   created () {
     this.loadUsersList()
+    this.loadRolesList()
   },
   methods: {
     // 加载用户数据
@@ -246,6 +257,14 @@ export default {
         // 3. 刷新列表  --编辑完成显示当前页
         this.loadUsersList(this.pagenum)
       }
+    },
+    /**
+     * 获取角色列表
+     */
+    async loadRolesList () {
+      let res = await this.$axios.get('roles')
+      console.log(res)
+      this.rolesList = res.data.data
     }
   }
 }
