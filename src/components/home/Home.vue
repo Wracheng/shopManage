@@ -4,14 +4,10 @@
     <el-header>
       <!-- 三个部分 -->
       <el-row>
-        <el-col :span="8">
-          <img src="../../assets/images/logo.png" alt>
-        </el-col>
-        <el-col :span="8">
+        <el-col :span="5">
           <h1>电商后台管理系统</h1>
         </el-col>
-        <el-col class="col" :span="8">
-          恭喜35期学员平均月薪资 2万
+        <el-col class="col" :span="18">
           <a @click.prevent="logout" href="#">退出</a>
         </el-col>
       </el-row>
@@ -37,32 +33,23 @@
         -->
         <el-menu
           :router="true"
-          default-active="2-2"
+          :default-active="$route.path"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
           <!-- 第一个 -->
-          <el-submenu index="1">
+          <!-- 第一层 的index 只要唯一即可 -->
+          <el-submenu :index="item1.id+''" v-for='item1 in menus' :key='item1.id'>
             <!-- 标题 -->
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{ item1.authName }}</span>
             </template>
-            <!-- 两个菜单元素 -->
-            <el-menu-item index="users">用户列表</el-menu-item>
+
+            <el-menu-item v-for='item2 in item1.children' :key='item2.id' :index="'/'+item2.path">{{ item2.authName }}</el-menu-item>
           </el-submenu>
-          <!-- 第二个 -->
-          <el-submenu index="2">
-            <!-- 标题 -->
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>权限管理</span>
-            </template>
-            <!-- 两个菜单元素 -->
-            <el-menu-item index="roles">角色列表</el-menu-item>
-            <el-menu-item index="rights">权限列表</el-menu-item>
-          </el-submenu>
+
         </el-menu>
       </el-aside>
       <el-main>
@@ -75,6 +62,14 @@
 <script>
 /* eslint-disable */
 export default {
+  data() {
+    return {
+      menus :[]
+    }
+  },
+  created() {
+    this.loadMenus();
+  },
   methods: {
     /**
      * 退出登录
@@ -100,11 +95,11 @@ export default {
         });
       } catch (error) {
         console.log("点击取消了");
-         this.$message({
-            type: "info",
-            message: "已取消退出",
-            duration: 800
-          });
+        this.$message({
+          type: "info",
+          message: "已取消退出",
+          duration: 800
+        });
       }
 
       // 点击确定按钮
@@ -150,6 +145,15 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log("关闭了");
+    },
+    /**
+     * 动态获取左侧权限
+     */
+    async loadMenus() {
+      let res = await this.$axios.get('menus')
+      console.log(res);
+      this.menus = res.data.data
+
     }
   }
 };

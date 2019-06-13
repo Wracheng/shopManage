@@ -15,6 +15,11 @@ import './assets/css/common.css'
 
 // 处理axios的三个问题
 import axios from 'axios'
+
+// 引入+注册
+import ElTreeGrid from 'element-tree-grid'
+Vue.component(ElTreeGrid.name, ElTreeGrid)
+
 // 处理1 : 基路径
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 // 处理2 : 每次引入axios

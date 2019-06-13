@@ -73,14 +73,21 @@ export default {
       assignRoleForm: {
         username: '测试',
         // 角色id
-        rid: ''
+        rid: '',
+        // 用户id
+        id: ''
       },
       // 角色列表
       rolesList: []
     }
   },
   created () {
-    this.loadUsersList()
+
+    // 获取url路径下的页码
+    const curpage = this.$route.params.page
+    console.log(curpage);
+
+    this.loadUsersList(curpage)
     this.loadRolesList()
   },
   methods: {
@@ -116,6 +123,8 @@ export default {
     // 改变页数
     changePage (curPage) {
       // console.log('页码改变了',curPage);
+       // 通过编程式导航跳转
+      this.$router.push('/users/'+curPage)
       this.loadUsersList(curPage, this.searchText)
     },
     // 开始查询
@@ -265,6 +274,52 @@ export default {
       let res = await this.$axios.get('roles')
       console.log(res)
       this.rolesList = res.data.data
+    },
+    /**
+     * 显示分配角色对话框
+     */
+    async showAssignRoleDialog (row) {
+      const { username, id } = row
+
+      // 1.用户名
+      this.assignRoleForm.username = username
+
+      // 2.用户id
+      this.assignRoleForm.id = id
+
+      // 接口 : 用户 id  => 角色id
+      // 缺少用户的角色id    ???????
+      let res = await this.$axios.get('users/' + id)
+      console.log(res.data.data.rid)
+      //  rid = -1  , 本来是没有分配过角色的情况 我们希望提示 : 请选择角色  rid = ''
+      // 3. 赋值 rid
+      this.assignRoleForm.rid =
+        res.data.data.rid === -1 ? '' : res.data.data.rid
+
+      this.dialogAssignRoleVisible = true
+    },
+    /**
+     * 开始分配角色
+     */
+    async startAssignRole () {
+      const { id, rid } = this.assignRoleForm
+
+      let res = await this.$axios.put(`users/${id}/role`, {
+        rid
+      })
+      console.log(res)
+      if (res.data.meta.status === 200) {
+        // 关闭对话框
+        this.dialogAssignRoleVisible = false
+        // 提示
+        this.$message({
+          message: '分配角色成功',
+          type: 'success',
+          duration: 800
+        })
+        // 刷新列表
+        this.loadUsersList(this.pagenum)
+      }
     }
   }
 }

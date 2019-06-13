@@ -69,7 +69,7 @@
           icon="el-icon-delete"
           @click="delUser(scope.row.id)"
         ></el-button>
-        <el-button plain size="mini" type="success" icon="el-icon-check"
+        <el-button plain size="mini" type="success" icon="el-icon-check" @click='showAssignRoleDialog(scope.row)'
           >分配角色</el-button
         >
       </template>
@@ -158,7 +158,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogAssignRoleVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogAssignRoleVisible = false"
+      <el-button type="primary" @click="startAssignRole"
         >确 定</el-button
       >
     </div>
